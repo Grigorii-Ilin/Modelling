@@ -1,16 +1,22 @@
 from collections import OrderedDict
+import csv
 
+class NewtonPolynominal(object):
+    def __init__(self, 
+                 stats, 
+                 x_0, 
+                 x_n, 
+                 step, 
+                 polynominal_degree, 
+                 x):
 
-def get_xy_ordered_dict():
-    y_by_x = OrderedDict()
+        if isinstance(stats, OrderedDict):
+            self.stats=stats
+        elif isinstance(stats, str):
+            self.stats=OrderedDict()
 
-    y_by_x[0.0] = 0.0
-    y_by_x[1.0] = 1.0
-    y_by_x[2.0] = 4.0
-    y_by_x[3.0] = 9.0
-    y_by_x[4.0] = 16.0
-
-    return y_by_x
+            with open(stats, 'rb') as csvfile:
+                line = csv.reader(csvfile, delimiter=' ', quotechar='|')
 
 
 def div_delta_y_by_delta_x(ys, xs):
@@ -50,14 +56,24 @@ def get_x_product(xs):
         return delta_x * get_x_product(xs[1:])
 
 
-y_by_x = get_xy_ordered_dict()
-polynom = 0
-inputed_x = 1.5
-xs = [x for x in y_by_x.keys()]
+y_by_x = OrderedDict()
+#polynom = 0
+inputed_x = 0.0
+#xs = [x for x in y_by_x.keys()]
 
-for i in range(len(y_by_x)):
-    x_prod_part = get_x_product(xs[:i]) if i != 0 else 1
-    y_div_part = get_div_diff(xs[:i + 1])
-    polynom +=  x_prod_part * y_div_part 
+#for i in range(len(y_by_x)):
+#    x_prod_part = get_x_product(xs[:i]) if i != 0 else 1
+#    y_div_part = get_div_diff(xs[:i + 1])
+#    polynom +=  x_prod_part * y_div_part 
 
-print(polynom)
+#print(polynom)
+
+
+def poly(x_0, x_n, step, polynominal_degree, x):
+    nonlocal inputed_x
+
+
+
+
+#def fn_x_power_2(x):
+#    return x**2
