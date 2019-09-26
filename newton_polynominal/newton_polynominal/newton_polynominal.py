@@ -24,9 +24,8 @@ class NewtonPolynominal(object):
                 csvfile.seek(0)
                 lines = csv.reader(csvfile, dialect)
 
-                #lines = csv.reader(csvfile, delimiter=';'):    ##, quotechar=';'): #dialect='excel')
                 for line in lines:
-                    x, y = map(float, line)  # float(*line)
+                    x, y = map(float, line) 
                     self.y_by_x[x] = y
 
         self.x_0 = float(x_0)
@@ -68,6 +67,7 @@ class NewtonPolynominal(object):
 
 
     def get_x_product(self, xs):
+
         if len(xs) == 1:  
             return self.inputed_x - xs[0]
 
@@ -76,10 +76,7 @@ class NewtonPolynominal(object):
             return delta_x * self.get_x_product(xs[1:])
 
 
-    def poly(self):#(x_0, x_n, step, polynominal_degree, x):
-                   #y_by_x = OrderedDict()
-
-#inputed_x = 0.0
+    def poly(self):
 
         xs = []
         polynom_degree_current = 1
@@ -92,24 +89,9 @@ class NewtonPolynominal(object):
             x_i+=self.step * self.STEP_DELTA
             polynom_degree_current+=1
 
-        #assert polynom_degree_current < self.polynom_degree
-
-        #xs = [x for x in self.y_by_x.keys()]
-
-        for i in range(self.polynom_degree): #(len(y_by_x)):
+        for i in range(self.polynom_degree): 
             x_prod_part = self.get_x_product(xs[:i]) if i != 0 else 1
             y_div_part = self.get_div_diff(xs[:i + 1])
             self.polynom +=  x_prod_part * y_div_part 
 
-        #print(polynom)
         return self.polynom
-
-
-
-    #nonlocal inputed_x
-
-
-
-
-#def fn_x_power_2(x):
-#    return x**2

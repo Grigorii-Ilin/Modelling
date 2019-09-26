@@ -30,7 +30,7 @@ class MyWindow(QMainWindow):
         self.tbl_input.setRowCount(len(headers_vert))
         self.tbl_input.setVerticalHeaderLabels(headers_vert)
 
-        #
+        #for example:
         self.tbl_input.setItem(0,0,QTableWidgetItem('0.0'))
         self.tbl_input.setItem(1,0,QTableWidgetItem('4.0'))
         self.tbl_input.setItem(2,0,QTableWidgetItem('10.0'))
@@ -49,8 +49,6 @@ class MyWindow(QMainWindow):
     def create_button_poly_root(self):
         self.button_poly_root = QPushButton('y(x)=cos(x)-x=0', self)
         self.button_poly_root.move(130,215)
-        
-        #######!!!!!!!self.button_poly_root.clicked.connect(self.calc)
 
 
     def create_about(self):
@@ -80,8 +78,6 @@ class MyWindow(QMainWindow):
         cell_item = self.tbl_input.item(row, 0)
         result = float(cell_item.text()) if cell_item else 0.0
 
-        #print(row, result, left_border, right_border)
-
         assert result >= left_border 
         assert result <= right_border
 
@@ -101,8 +97,6 @@ class MyWindow(QMainWindow):
             self.show_error_message()
             return
 
-        #poly_result=poly.poly(x_0, x_n, step, polynominal_degree, x)
-        #fn_result=poly.fn_x_power_2(x)
         poly_result=NewtonPolynominal('x_power_2.csv', x_0, x_n, step, polynom_degree, x).poly()
         fn_result = x ** 2
 
@@ -113,6 +107,3 @@ app = QApplication(sys.argv)
 main_window = MyWindow()  
 main_window.show()
 app.exec_()
-
-
-input()
