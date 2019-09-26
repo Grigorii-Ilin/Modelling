@@ -2,10 +2,10 @@ import sys
 import functools
 import itertools
 
-from PyQt5.QtWidgets import QApplication, QMainWindow,  QPushButton,  QLabel, QErrorMessage, QMessageBox, QTableWidget
+from PyQt5.QtWidgets import QApplication, QMainWindow,  QPushButton,  QLabel, QErrorMessage, QMessageBox, QTableWidget, QTableWidgetItem
 from PyQt5.QtCore import  QSize
 
-import newton_polynominal as poly
+from newton_polynominal import NewtonPolynominal
 
 
 class MyWindow(QMainWindow):
@@ -26,11 +26,19 @@ class MyWindow(QMainWindow):
         self.tbl_input.setColumnCount(len(headers_horiz))
         self.tbl_input.setHorizontalHeaderLabels(headers_horiz)
 
-        headers_vert = ['x начальный', 'x конечный', 'шаг', 'степень полинома', 'x']
+        headers_vert = ['x начальный (мин. -100)', 'x конечный (макс. 100)', 'шаги (один шаг = 0,1x)', 'степень полинома', 'x']
         self.tbl_input.setRowCount(len(headers_vert))
         self.tbl_input.setVerticalHeaderLabels(headers_vert)
 
-        self.tbl_input.resize(230,180)
+        #
+        self.tbl_input.setItem(0,0,QTableWidgetItem('0.0'))
+        self.tbl_input.setItem(1,0,QTableWidgetItem('4.0'))
+        self.tbl_input.setItem(2,0,QTableWidgetItem('10.0'))
+        self.tbl_input.setItem(3,0,QTableWidgetItem('4'))
+        self.tbl_input.setItem(4,0,QTableWidgetItem('1.5'))
+        #
+
+        self.tbl_input.resize(260,180)
 
     def create_button_poly(self):
         self.button_poly = QPushButton('y(x)=x^2', self)
@@ -60,10 +68,10 @@ class MyWindow(QMainWindow):
 
     
     @staticmethod
-    def show_max_memory_size(m_dt, m_e):
+    def show_x_sqr_message(poly_result, fn_result):
         msg = QMessageBox(QMessageBox.Information,
             'Успех!',
-            'Максимальный объем памяти: \nв Δt алгоритме: {0:d}, \nв событийном алгоритме: {1:d}.'.format(m_dt, m_e), 
+            'Полином: {0:f}, \nФункция: {1:f}.'.format(poly_result, fn_result), 
             QMessageBox.Ok)
         msg.exec_() 
 
@@ -71,6 +79,8 @@ class MyWindow(QMainWindow):
     def read_cell(self, row, left_border=sys.float_info.min, right_border=sys.float_info.max):
         cell_item = self.tbl_input.item(row, 0)
         result = float(cell_item.text()) if cell_item else 0.0
+
+        #print(row, result, left_border, right_border)
 
         assert result >= left_border 
         assert result <= right_border
@@ -82,20 +92,21 @@ class MyWindow(QMainWindow):
         try:
             row_increment = functools.partial(next, itertools.count())
 
-            x_0 = self.read_cell(row_increment() - 100.0, 99.4)
-            x_n = self.read_cell(row_increment(), -99.4, 100.0)
-            step = self.read_cell(row_increment(),0.2, 200.0 / 4)
-            polynominal_degree = self.read_cell(row_increment(), 2, 10)
+            x_0 = self.read_cell(row_increment(), - 100.0, 99.4)
+            x_n = self.read_cell(row_increment(), x_0 + 0.06, 100.0)
+            step = self.read_cell(row_increment(),1, 50)
+            polynom_degree = self.read_cell(row_increment(), 2, 30)
             x = self.read_cell(row_increment(), -100.0, 100.0)
         except :
             self.show_error_message()
             return
 
-        poly_result=poly.poly(x_0, x_n, step, polynominal_degree, x)
+        #poly_result=poly.poly(x_0, x_n, step, polynominal_degree, x)
         #fn_result=poly.fn_x_power_2(x)
-        fn_result=x**2
+        poly_result=NewtonPolynominal('x_power_2.csv', x_0, x_n, step, polynom_degree, x).poly()
+        fn_result = x ** 2
 
-        self.show_max_memory_size()
+        self.show_x_sqr_message(poly_result, fn_result)
 
 
 app = QApplication(sys.argv)
@@ -103,3 +114,5 @@ main_window = MyWindow()
 main_window.show()
 app.exec_()
 
+
+input()

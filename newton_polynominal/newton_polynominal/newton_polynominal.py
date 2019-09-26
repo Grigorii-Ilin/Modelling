@@ -1,76 +1,112 @@
 from collections import OrderedDict
 import csv
+from decimal import Decimal as D, ROUND_HALF_DOWN
 
 class NewtonPolynominal(object):
     def __init__(self, 
-                 stats, 
+                 y_by_x_resourse, 
                  x_0, 
                  x_n, 
                  step, 
-                 polynominal_degree, 
-                 x):
+                 polynom_degree, 
+                 inputed_x):
 
-        if isinstance(stats, OrderedDict):
-            self.stats=stats
-        elif isinstance(stats, str):
-            self.stats=OrderedDict()
+        self.STEP_DELTA = 0.1
 
-            with open(stats, 'rb') as csvfile:
-                line = csv.reader(csvfile, delimiter=' ', quotechar='|')
+        if isinstance(y_by_x_resourse, OrderedDict):
+            self.y_by_x = y_by_x_resourse
+
+        elif isinstance(y_by_x_resourse, str):
+            self.y_by_x = OrderedDict()
+
+            with open(y_by_x_resourse, 'r') as csvfile:
+                dialect = csv.Sniffer().sniff(csvfile.read(), delimiters=';,')
+                csvfile.seek(0)
+                lines = csv.reader(csvfile, dialect)
+
+                #lines = csv.reader(csvfile, delimiter=';'):    ##, quotechar=';'): #dialect='excel')
+                for line in lines:
+                    x, y = map(float, line)  # float(*line)
+                    self.y_by_x[x] = y
+
+        self.x_0 = float(x_0)
+        self.x_n = float(x_n)
+        self.step = int(step)
+        self.polynom_degree = int(polynom_degree)
+        self.inputed_x = float(inputed_x)
+
+        self.polynom = 0.0
 
 
-def div_delta_y_by_delta_x(ys, xs):
-    delta_y = ys[0] - ys[1]
-    delta_x = xs[0] - xs[-1]
+    def get_div_diff(self, xs):
+
+        def div_delta_y_by_delta_x(ys, xs):
+            delta_y = ys[0] - ys[1]
+            delta_x = xs[0] - xs[-1]
         
-    if delta_x != 0:
-        return delta_y / delta_x
-    else:
-        return float("inf")
+            if delta_x != 0:
+                return delta_y / delta_x
+            else:
+                return float("inf")
 
 
-def get_div_diff(xs):
-    len_xs = len(xs)
+        len_xs = len(xs)
 
-    if len_xs == 1:
-        return y_by_x[xs[0]]
+        if len_xs == 1:
+            return self.y_by_x[xs[0]]
 
-    elif len_xs == 2:
-        ys = [y_by_x[x] for x in xs]
-        return div_delta_y_by_delta_x(ys, xs)
+        elif len_xs == 2:
+            ys = [self.y_by_x[x] for x in xs]
+            return div_delta_y_by_delta_x(ys, xs)
 
-    else:
-        ys = []
-        ys.append(get_div_diff(xs[:-1]))
-        ys.append(get_div_diff(xs[1:]))
+        else:
+            ys = []
+            ys.append(self.get_div_diff(xs[:-1]))
+            ys.append(self.get_div_diff(xs[1:]))
 
-        return div_delta_y_by_delta_x(ys, xs)
-
-
-def get_x_product(xs):
-    if len(xs) == 1:  
-        return inputed_x - xs[0]
-
-    else:
-        delta_x = inputed_x - xs[0]
-        return delta_x * get_x_product(xs[1:])
+            return div_delta_y_by_delta_x(ys, xs)
 
 
-y_by_x = OrderedDict()
-#polynom = 0
-inputed_x = 0.0
-#xs = [x for x in y_by_x.keys()]
+    def get_x_product(self, xs):
+        if len(xs) == 1:  
+            return self.inputed_x - xs[0]
 
-#for i in range(len(y_by_x)):
-#    x_prod_part = get_x_product(xs[:i]) if i != 0 else 1
-#    y_div_part = get_div_diff(xs[:i + 1])
-#    polynom +=  x_prod_part * y_div_part 
-
-#print(polynom)
+        else:
+            delta_x = self.inputed_x - xs[0]
+            return delta_x * self.get_x_product(xs[1:])
 
 
-def poly(x_0, x_n, step, polynominal_degree, x):
-    nonlocal inputed_x
+    def poly(self):#(x_0, x_n, step, polynominal_degree, x):
+                   #y_by_x = OrderedDict()
+
+#inputed_x = 0.0
+
+        xs = []
+        polynom_degree_current = 1
+        x_i = self.x_0
+
+        while x_i <= self.x_n and polynom_degree_current <= self.polynom_degree:
+            x_i = float(D(x_i).quantize(D('1.0'), ROUND_HALF_DOWN)) 
+            xs.append(x_i)
+
+            x_i+=self.step * self.STEP_DELTA
+            polynom_degree_current+=1
+
+        #assert polynom_degree_current < self.polynom_degree
+
+        #xs = [x for x in self.y_by_x.keys()]
+
+        for i in range(self.polynom_degree): #(len(y_by_x)):
+            x_prod_part = self.get_x_product(xs[:i]) if i != 0 else 1
+            y_div_part = self.get_div_diff(xs[:i + 1])
+            self.polynom +=  x_prod_part * y_div_part 
+
+        #print(polynom)
+        return self.polynom
+
+
+
+    #nonlocal inputed_x
 
 
 
