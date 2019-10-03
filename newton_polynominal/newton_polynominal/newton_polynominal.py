@@ -5,34 +5,40 @@ from decimal import Decimal as D, ROUND_HALF_DOWN
 class NewtonPolynominal(object):
     def __init__(self, 
                  y_by_x_resourse, 
-                 x_0, 
-                 x_n, 
-                 step, 
-                 polynom_degree, 
+                 #x_0, 
+                 #x_n, 
+                 #step, 
+                 #polynom_degree, 
                  inputed_x):
 
-        self.STEP_DELTA = 0.1
+        #self.STEP_DELTA = 1
 
-        if isinstance(y_by_x_resourse, OrderedDict):
-            self.y_by_x = y_by_x_resourse
+        #if isinstance(y_by_x_resourse, OrderedDict):
+        #    self.y_by_x = y_by_x_resourse
 
-        elif isinstance(y_by_x_resourse, str):
-            self.y_by_x = OrderedDict()
+        self.y_by_x = y_by_x_resourse
 
-            with open(y_by_x_resourse, 'r') as csvfile:
-                dialect = csv.Sniffer().sniff(csvfile.read(), delimiters=';,')
-                csvfile.seek(0)
-                lines = csv.reader(csvfile, dialect)
+        #elif isinstance(y_by_x_resourse, str):
+        #    self.y_by_x = OrderedDict()
 
-                for line in lines:
-                    x, y = map(float, line) 
-                    self.y_by_x[x] = y
+        #    with open(y_by_x_resourse, 'r') as csvfile:
+        #        dialect = csv.Sniffer().sniff(csvfile.read(), delimiters=';,')
+        #        csvfile.seek(0)
+        #        lines = csv.reader(csvfile, dialect)
 
-        self.x_0 = float(x_0)
-        self.x_n = float(x_n)
-        self.step = int(step)
-        self.polynom_degree = int(polynom_degree)
-        self.inputed_x = float(inputed_x)
+        #        for line in lines:
+        #            x, y = map(float, line) 
+        #            self.y_by_x[x] = y
+
+        #self.x_0 = float(x_0)
+        #self.x_n = float(x_n)
+        #self.step = int(step)
+
+        self.polynom_degree = len(self.y_by_x)
+
+        #self.polynom_degree = int(polynom_degree)
+
+        self.inputed_x = inputed_x
 
         self.polynom = 0.0
 
@@ -78,16 +84,17 @@ class NewtonPolynominal(object):
 
     def poly(self):
 
-        xs = []
-        polynom_degree_current = 1
-        x_i = self.x_0
+        xs = [x for x in self.y_by_x.keys()]
+        #polynom_degree_current = 1
+        #x_i = self.x_0
 
-        while x_i <= self.x_n and polynom_degree_current <= self.polynom_degree:
-            x_i = float(D(x_i).quantize(D('1.0'), ROUND_HALF_DOWN)) 
-            xs.append(x_i)
+        #while x_i <= self.x_n and polynom_degree_current <= self.polynom_degree:
 
-            x_i+=self.step * self.STEP_DELTA
-            polynom_degree_current+=1
+            #x_i = float(D(x).quantize(D('1.0'), ROUND_HALF_DOWN))
+            #xs.append(x_i)
+
+            #x_i+=self.step * self.STEP_DELTA
+            #polynom_degree_current+=1
 
         for i in range(self.polynom_degree): 
             x_prod_part = self.get_x_product(xs[:i]) if i != 0 else 1

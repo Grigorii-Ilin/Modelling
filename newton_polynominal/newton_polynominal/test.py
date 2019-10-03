@@ -14,13 +14,14 @@ def get_xy_ordered_dict():
 
 
 p=NewtonPolynominal(y_by_x_resourse=get_xy_ordered_dict(),
-                    x_0=0.0,
-                    x_n=4.0,
-                    step=10,
-                    polynom_degree=4,
+                    #x_0=0.0,
+                    #x_n=4.0,
+                    #step=1,
+                    #polynom_degree=2,
                     inputed_x=1.5)
 
 p.poly()
 print(p.polynom)
 
 assert p.polynom == 2.25
+input()
