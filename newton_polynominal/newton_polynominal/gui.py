@@ -28,19 +28,10 @@ class MyWindow(QMainWindow):
         self.tbl_params.setColumnCount(len(headers_horiz))
         self.tbl_params.setHorizontalHeaderLabels(headers_horiz)
 
-        #headers_vert = ['x начальный (мин.  -100)', 'x конечный (макс.  100)',
-        #'шаги (один шаг = 0,1x)', 'степень полинома', 'x']
         headers_vert=["x",]
         self.tbl_params.setRowCount(len(headers_vert))
         self.tbl_params.setVerticalHeaderLabels(headers_vert)
 
-        ##for example:
-        #self.tbl_params.setItem(0,0,QTableWidgetItem('0.0'))
-        #self.tbl_params.setItem(1,0,QTableWidgetItem('4.0'))
-        #self.tbl_params.setItem(2,0,QTableWidgetItem('10.0'))
-        #self.tbl_params.setItem(3,0,QTableWidgetItem('4'))
-        #self.tbl_params.setItem(4,0,QTableWidgetItem('1.5'))
-        #
         self.tbl_params.setItem(0,0,QTableWidgetItem('1.5'))
 
         self.tbl_params.resize(160,100)
@@ -108,21 +99,18 @@ class MyWindow(QMainWindow):
         msg.exec_() 
 
 
-    def read_cells(self, row): #, left_border=sys.float_info.min, right_border=sys.float_info.max):
-        #cell_item = self.tbl_params.item(row, 0)
-                                     #result = float(cell_item.text()) if cell_item else 0.0
-
+    def read_cells(self, row): 
         row_values = []
         for col in range(2):
             cell_item = self.tbl_xy.item(row, col)
 
             if cell_item is not None:
-                row_values.append(float(cell_item.text()))
+                try:
+                    row_values.append(float(cell_item.text()))
+                except:
+                    return None
             else:
                 return None
-
-        #assert all(results) >= left_border
-        #assert all(results) <= right_border
 
         return row_values
 
@@ -141,25 +129,12 @@ class MyWindow(QMainWindow):
                 else:
                     x,y = row_values
                     y_by_x[x] = y
-                    #row+=1
-
-
-            #row_increment = functools.partial(next, itertools.count())
-
-            #x_0 = self.read_cell(row_increment(), - 100.0, 99.4)
-            #x_n = self.read_cell(row_increment(), x_0 + 0.06, 100.0)
-            #step = self.read_cell(row_increment(),1, 50)
-            #polynom_degree = self.read_cell(row_increment(), 2, 30)
-            #x = self.read_cell(row_increment(), -100.0, 100.0)
 
             needed_x=float(self.tbl_params.item(0, 0).text())
-            print(needed_x)
+            #print(needed_x)
         except :
             self.show_error_message()
             return
-
-        #poly_result=NewtonPolynominal('x_power_2.csv', x_0, x_n, step,
-        #polynom_degree, x).poly()
 
         poly_result=NewtonPolynominal(y_by_x, needed_x).poly()
         fn_result = needed_x ** 2
