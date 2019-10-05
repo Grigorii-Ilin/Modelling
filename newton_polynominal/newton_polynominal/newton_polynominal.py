@@ -4,13 +4,19 @@ from decimal import Decimal as D, ROUND_HALF_DOWN
 
 class NewtonPolynominal(object):
 
-    def __init__(self, y_by_x_resourse, inputed_x):
+    def __init__(self, y_by_x_resourse, inputed_coord, inputed_value, poly_degree):
 
-        self.y_by_x = y_by_x_resourse
-        self.polynom_degree = len(self.y_by_x)
-        self.inputed_x = inputed_x
+        if inputed_coord=="x":
+            self.y_by_x = y_by_x_resourse 
+        else:
+            self.y_by_x=OrderedDict()
+            for k, v in y_by_x_resourse.items():
+                self.y_by_x[v]=k
+
+        #self.polynom_degree = len(self.y_by_x)
+        self.inputed_x = inputed_value
         self.polynom = 0.0
-
+        self.polynom_degree=int(poly_degree)+1
 
     def get_div_diff(self, xs):
 
@@ -55,9 +61,15 @@ class NewtonPolynominal(object):
 
         xs = [x for x in self.y_by_x.keys()]
 
-        for i in range(self.polynom_degree): 
+        xs.sort(key=lambda x: abs(x-self.inputed_x))
+        xs=xs[:self.polynom_degree]
+        xs.sort()
+        #print(xs)
+
+        for i in range(len(xs)):#self.polynom_degree): 
             x_prod_part = self.get_x_product(xs[:i]) if i != 0 else 1
             y_div_part = self.get_div_diff(xs[:i + 1])
             self.polynom +=  x_prod_part * y_div_part 
 
-        return self.polynom
+
+        return self.polynom   #+self.y_by_x[0]

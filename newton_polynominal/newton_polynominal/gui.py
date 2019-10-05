@@ -2,6 +2,7 @@ import sys
 import functools
 import itertools
 from collections import OrderedDict
+import math
 
 from PyQt5.QtWidgets import QApplication, QMainWindow,  QPushButton,  QLabel, QErrorMessage, QMessageBox, QTableWidget, QTableWidgetItem
 from PyQt5.QtCore import  QSize
@@ -16,8 +17,8 @@ class MyWindow(QMainWindow):
 
         self.create_table_params()
         self.create_table_xy()
-        self.create_button_poly()
-        self.create_button_poly_root()
+        self.create_button_x_square()
+        self.create_button_cos_x_minus_x()
         self.create_about()
 
 
@@ -28,13 +29,15 @@ class MyWindow(QMainWindow):
         self.tbl_params.setColumnCount(len(headers_horiz))
         self.tbl_params.setHorizontalHeaderLabels(headers_horiz)
 
-        headers_vert=["x",]
+        headers_vert=["Координата","Значение", "Степ. полинома"]
         self.tbl_params.setRowCount(len(headers_vert))
         self.tbl_params.setVerticalHeaderLabels(headers_vert)
 
-        self.tbl_params.setItem(0,0,QTableWidgetItem('1.5'))
+        self.tbl_params.setItem(0,0,QTableWidgetItem('x'))
+        self.tbl_params.setItem(0,1,QTableWidgetItem('1.5'))
+        self.tbl_params.setItem(0,2,QTableWidgetItem('3'))
 
-        self.tbl_params.resize(160,100)
+        self.tbl_params.resize(200,140)
 
     def create_table_xy(self):
         self.tbl_xy = QTableWidget(self)
@@ -65,15 +68,16 @@ class MyWindow(QMainWindow):
         self.tbl_xy.resize(250,340)
 
 
-    def create_button_poly(self):
+    def create_button_x_square(self):
         self.button_poly = QPushButton('y(x)=x^2', self)
         self.button_poly.move(0,215)
-        self.button_poly.clicked.connect(self.calc_poly)  
+        self.button_poly.clicked.connect(self.button_x_square)  
 
 
-    def create_button_poly_root(self):
+    def create_button_cos_x_minus_x(self):
         self.button_poly_root = QPushButton('y(x)=cos(x)-x=0', self)
         self.button_poly_root.move(130,215)
+        self.button_poly_root.clicked.connect(self.cos_x_minus_x)  
 
 
     def create_about(self):
@@ -91,12 +95,28 @@ class MyWindow(QMainWindow):
 
     
     @staticmethod
-    def show_x_sqr_message(poly_result, fn_result):
+    def show_x_message(poly_result, fn_result):
         msg = QMessageBox(QMessageBox.Information,
             'Успех!',
             'Полином: {0:f}, \nФункция: {1:f}.'.format(poly_result, fn_result), 
             QMessageBox.Ok)
         msg.exec_() 
+
+    @staticmethod
+    def show_y_message(poly_result):
+        msg = QMessageBox(QMessageBox.Information,
+            'Успех!',
+            'Корень: {0:f}'.format(poly_result), 
+            QMessageBox.Ok)
+        msg.exec_() 
+
+
+    def button_x_square(self):
+        self.calc_poly(lambda x: x**2 )
+
+
+    def cos_x_minus_x(self):
+        self.calc_poly(lambda x: math.cos(x)-x )
 
 
     def read_cells(self, row): 
@@ -115,7 +135,7 @@ class MyWindow(QMainWindow):
         return row_values
 
 
-    def calc_poly(self):
+    def calc_poly(self, fn_for_check):
         try:
             y_by_x = OrderedDict()
             row = 0
@@ -130,16 +150,25 @@ class MyWindow(QMainWindow):
                     x,y = row_values
                     y_by_x[x] = y
 
-            needed_x=float(self.tbl_params.item(0, 0).text())
-            #print(needed_x)
+            inputed_coord_name=self.tbl_params.item(0, 0).text()
+            assert inputed_coord_name in ["x", "y"]
+
+            inputed_value=float(self.tbl_params.item(1, 0).text())
+
+            poly_degree=int(self.tbl_params.item(2, 0).text())
+
         except :
             self.show_error_message()
             return
 
-        poly_result=NewtonPolynominal(y_by_x, needed_x).poly()
-        fn_result = needed_x ** 2
+        poly_result=NewtonPolynominal(y_by_x, inputed_coord_name, inputed_value, poly_degree).poly()
+        #fn_result = inputed_value ** 2
 
-        self.show_x_sqr_message(poly_result, fn_result)
+        if inputed_coord_name=="x":
+            fn_result=fn_for_check(inputed_value)
+            self.show_x_message(poly_result, fn_result)
+        else:
+            self.show_y_message(poly_result)
 
 
 app = QApplication(sys.argv)
