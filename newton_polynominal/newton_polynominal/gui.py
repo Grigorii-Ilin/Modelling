@@ -11,6 +11,8 @@ from newton_polynominal import NewtonPolynominal
 
 
 class MyWindow(QMainWindow):
+    ROWS_COUNT=10
+
     def __init__(self):
         QMainWindow.__init__(self)       
         self.setMinimumSize(QSize(600, 400))   
@@ -18,7 +20,9 @@ class MyWindow(QMainWindow):
         self.create_table_params()
         self.create_table_xy()
         self.create_button_x_square()
+        self.create_button_x_square_fill()
         self.create_button_cos_x_minus_x()
+        self.create_button_cos_x_minus_x_fill()
         self.create_about()
 
 
@@ -46,43 +50,39 @@ class MyWindow(QMainWindow):
         self.tbl_xy.setColumnCount(len(headers_horiz))
         self.tbl_xy.setHorizontalHeaderLabels(headers_horiz)
 
-        self.tbl_xy.setRowCount(10)
-
-        #for example:
-        self.tbl_xy.setItem(0,0,QTableWidgetItem('0.0'))
-        self.tbl_xy.setItem(0,1,QTableWidgetItem('0.0'))
-
-        self.tbl_xy.setItem(1,0,QTableWidgetItem('1.0'))
-        self.tbl_xy.setItem(1,1,QTableWidgetItem('1.0'))
-
-        self.tbl_xy.setItem(2,0,QTableWidgetItem('2.0'))
-        self.tbl_xy.setItem(2,1,QTableWidgetItem('4.0'))
-        
-        self.tbl_xy.setItem(3,0,QTableWidgetItem('3.0'))
-        self.tbl_xy.setItem(3,1,QTableWidgetItem('9.0'))
-        
-        self.tbl_xy.setItem(4,0,QTableWidgetItem('4.0'))
-        self.tbl_xy.setItem(4,1,QTableWidgetItem('16.0'))
+        self.tbl_xy.setRowCount(self.ROWS_COUNT)
 
         self.tbl_xy.move(320, 0)
         self.tbl_xy.resize(250,340)
 
 
     def create_button_x_square(self):
-        self.button_poly = QPushButton('y(x)=x^2', self)
-        self.button_poly.move(0,215)
-        self.button_poly.clicked.connect(self.button_x_square)  
+        self.button_x_square = QPushButton('y(x)=x^2', self)
+        self.button_x_square.move(0,215)
+        self.button_x_square.clicked.connect(self.x_square)  
+
+
+    def create_button_x_square_fill(self):
+        self.button_x_square_fill = QPushButton('Заполнить', self)
+        self.button_x_square_fill.move(0,255)
+        self.button_x_square_fill.clicked.connect(self.fill_x_square)  
 
 
     def create_button_cos_x_minus_x(self):
-        self.button_poly_root = QPushButton('y(x)=cos(x)-x=0', self)
+        self.button_poly_root = QPushButton('y(x)=cos(x)-x', self)
         self.button_poly_root.move(130,215)
         self.button_poly_root.clicked.connect(self.cos_x_minus_x)  
 
 
+    def create_button_cos_x_minus_x_fill(self):
+        self.button_poly_root_fill = QPushButton('Заполнить', self)
+        self.button_poly_root_fill.move(130,255)
+        self.button_poly_root_fill.clicked.connect(self.fill_cos_x_minus_x)  
+
+
     def create_about(self):
         self.lbl_about = QLabel(self)
-        self.lbl_about.move(0, 250)
+        self.lbl_about.move(0, 300)
         self.lbl_about.setText('Лабораторная работа № 1. Автор: Г.Б. Ильин, ИУ7-78Б(В)')
         self.lbl_about.adjustSize()
 
@@ -111,12 +111,32 @@ class MyWindow(QMainWindow):
         msg.exec_() 
 
 
-    def button_x_square(self):
+    def fill_x_square(self):
+        self.fill(start=0.0, step=1.0, fn=lambda x: x**2 )
+
+
+    def fill_cos_x_minus_x(self):
+        self.fill(start=-2.0, step=0.5, fn=lambda x: math.cos(x)-x)
+
+
+    def fill(self, start, step, fn):
+        x=start
+        for i in range(self.ROWS_COUNT):
+            y=fn(x)
+
+            self.tbl_xy.setItem(i,0,QTableWidgetItem(str(x)))
+            self.tbl_xy.setItem(i,1,QTableWidgetItem(str(y)))
+
+            x+=step
+
+
+
+    def x_square(self):
         self.calc_poly(lambda x: x**2 )
 
 
     def cos_x_minus_x(self):
-        self.calc_poly(lambda x: math.cos(x)-x )
+        self.calc_poly(lambda x: math.cos(x)-x)
 
 
     def read_cells(self, row): 
