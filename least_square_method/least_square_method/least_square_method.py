@@ -2,34 +2,35 @@ import numpy as np
 from pprint import pprint
 
 N_COUNT = 2 #count of coordinates
-X = 0
-Y = 1
-RO = 2
 
-inp = np.zeros(shape=(N_COUNT,3), dtype=float) #0-x, 1-y, 2-ro
-inp = [[1, 1, 0.5],
-     [2, 4, 0.5],
-     [3, 9, 0.5],
-     [4, 16, 0.5],
-     [5, 25, 0.5],
-     [6, 36, 0.5],
-     [7, 49, 0.5],
-     [8, 64, 0.5],
-     [9, 81, 0.5],
-     [10, 100, 0.5]]
+X_IND = 0
+Y_IND = 1
+RO_IND = 2
+
+inp = np.zeros(shape=(N_COUNT,RO_IND+1), dtype=np.longdouble) #0-x, 1-y, 2-ro
+
+inp = [[1, 1, 1],
+     [2, 4, 1],
+     [3, 9, 1],
+     [4, 16, 1],
+     [5, 25, 1],
+     [6, 36, 1],
+     [7, 49, 1],
+     [8, 64, 1],
+     [9, 81, 1],
+     [10, 100, 1]]
 
 pprint(inp)
 
-n = 1#polynominal_degree=
-mas = np.zeros(shape=(N_COUNT+1, N_COUNT))
+n = 1#polynominal_degree
+mas = np.zeros(shape=(n+1, N_COUNT+1))
 
-for m in range(N_COUNT):
+
+for m in range(n+1):
     for a in range(N_COUNT):
-        mas[a][m] = np.sum(inp[RO][i] * inp[X][i] ** (m + a) for i in range(N_COUNT))
+        mas[m][a] = np.sum(inp[i][RO_IND] * inp[i][X_IND] ** (m + a) for i in range(N_COUNT))
 
-    #i=2
-    #tmp=inp[X][i] ** m * inp[Y][i] * inp[RO][i] 
-    mas[N_COUNT][m] = np.sum(inp[X][i] ** m * inp[Y][i] * inp[RO][i] for i in range(N_COUNT))
+    mas[m][N_COUNT] = np.sum(np.prod([inp[i][X_IND] ** m, inp[i][Y_IND], inp[i][RO_IND]]) for i in range(N_COUNT))
 
 pprint(mas)
     
