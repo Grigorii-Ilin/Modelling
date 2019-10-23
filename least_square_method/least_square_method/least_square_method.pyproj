@@ -4,7 +4,7 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>54b50d9f-0982-4a1e-975d-06b83afd7e65</ProjectGuid>
     <ProjectHome>.</ProjectHome>
-    <StartupFile>least_square_method.py</StartupFile>
+    <StartupFile>frontend.py</StartupFile>
     <SearchPath>
     </SearchPath>
     <WorkingDirectory>.</WorkingDirectory>
@@ -21,10 +21,16 @@
     <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="frontend.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="gauss.py">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="least_square_method.py" />
+    <Compile Include="test.py">
+      <SubType>Code</SubType>
+    </Compile>
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\Python Tools\Microsoft.PythonTools.targets" />
   <!-- Uncomment the CoreCompile target to enable the Build command in

@@ -31,8 +31,10 @@ def _backward_trace(mas_len, m, v):
     coefs[mas_len - 1] = v[mas_len - 1]
     for i in reversed(range(mas_len - 1)):
         accum = 0.0
+
         for j in range(i + 1, mas_len):
             accum+=m[i][j] * coefs[j]
+
         coefs[i] = v[i] - accum
 
     return coefs
@@ -43,4 +45,4 @@ def gauss(mas, vec):
     mas_len = mas.shape[0]
     mas, vec = _forward_trace(mas_len, mas, vec)
     coefs = _backward_trace(mas_len, mas, vec)
-    return coefs
+    return coefs[::-1]
