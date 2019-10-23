@@ -1,6 +1,8 @@
 import numpy as np
 from pprint import pprint
 
+import gauss
+
 N_COUNT = 2 #count of coordinates
 
 X_IND = 0
@@ -23,18 +25,21 @@ inp = [[1, 1, 1],
 pprint(inp)
 
 n = 1#polynominal_degree
-mas = np.zeros(shape=(n+1, N_COUNT+1))
+mas = np.zeros(shape=(n+1, N_COUNT))
+vec=np.zeros(shape=(N_COUNT))
 
 
 for m in range(n+1):
     for a in range(N_COUNT):
         mas[m][a] = np.sum(inp[i][RO_IND] * inp[i][X_IND] ** (m + a) for i in range(N_COUNT))
 
-    mas[m][N_COUNT] = np.sum(np.prod([inp[i][X_IND] ** m, inp[i][Y_IND], inp[i][RO_IND]]) for i in range(N_COUNT))
+    vec[m] = np.sum(np.prod([inp[i][X_IND] ** m, inp[i][Y_IND], inp[i][RO_IND]]) for i in range(N_COUNT))
 
 pprint(mas)
+pprint(vec)
     
-
+coefs=gauss.gauss(mas, vec)
+pprint(coefs)
 
 
 
