@@ -30,7 +30,7 @@ def lsm(inp, polynom_degree=1):
     xs_for_approx=np.array(xs_for_approx)
 
     ys_by_coefs = np.zeros(shape=(polynom_degree + 1))
-    for i in range(polynom_degree + 1):#(n_count):
+    for i in range(polynom_degree + 1):
         y = 0.0
         for k in range(polynom_degree + 1):         
             y+=coefs[k] * xs_for_approx[i] ** k

@@ -110,20 +110,7 @@ class MyWindow(QMainWindow):
         except:
             self.show_error_message()
             return
-            
-
-        #inp = np.array([[1, 1, 0],
-        #             [2, 4, 1],
-        #             [3, 9, 1]])
-        #             #[4, 16, 1],
-        #             #[5, 25, 1],
-        #             #[6, 36, 1],
-        #             #[7, 49, -10000],
-        #             #[8, 64, 1],
-        #             #[9, 81, 1],
-        #             #[10, 100, 1]]
-        #             #  )
-        #polynominal_degree = 1
+   
 
         xs, ys = least_square_method.get_coords(inp)
 
