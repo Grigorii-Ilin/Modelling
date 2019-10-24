@@ -3,10 +3,18 @@ import matplotlib.pyplot as plt
 
 import least_square_method
 
-inp = np.array([[1, 1, 1],
-                [2, 4, 1],
-               [3, 9, 1]]
-               )
+
+inp = np.array([[1, 1, 2],
+             [2, 4, 1],
+             [3, 9, 1]])
+             #[4, 16, 1],
+             #[5, 25, 1],
+             #[6, 36, 1],
+             #[7, 49, -10000],
+             #[8, 64, 1],
+             #[9, 81, 1],
+             #[10, 100, 1]]
+             #  )
 
 polynominal_degree = 1
 
