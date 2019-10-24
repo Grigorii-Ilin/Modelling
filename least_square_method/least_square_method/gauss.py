@@ -40,9 +40,9 @@ def _backward_trace(mas_len, m, v):
     return coefs
 
 
-
 def gauss(mas, vec):
     mas_len = mas.shape[0]
     mas, vec = _forward_trace(mas_len, mas, vec)
     coefs = _backward_trace(mas_len, mas, vec)
-    return coefs#[::-1]
+    return coefs
+
