@@ -15,8 +15,8 @@ import runge_kutta_electricity
 class MyWindow(QMainWindow):
 
     def __init__(self):
-        QMainWindow.__init__(self)       
-        self.setMinimumSize(QSize(600, 400))   
+        QMainWindow.__init__(self)
+        self.setMinimumSize(QSize(600, 400))
 
         self.create_table_input()
         self.create_button_calc()
@@ -31,18 +31,18 @@ class MyWindow(QMainWindow):
             self.tbl_input.setItem(row_index, 3, QTableWidgetItem(str(value)))
 
 
-        ROWS_COUNT = 10
-        
+        ROWS_COUNT = 7
+
         self.tbl_input = QTableWidget(self)
 
-        headers_horiz = ["Название", "Обозначение", "Ед. изм.", "Значение"]        
+        headers_horiz = ["Название", "Обозначение", "Ед. изм.", "Значение"]
         self.tbl_input.setColumnCount(len(headers_horiz))
         self.tbl_input.setHorizontalHeaderLabels(headers_horiz)
 
         self.tbl_input.setRowCount(ROWS_COUNT)
 
         self.tbl_input.move(120, 0)
-        self.tbl_input.resize(330,340)
+        self.tbl_input.resize(430,300)
 
         row_increment = functools.partial(next, itertools.count())
 
@@ -58,8 +58,8 @@ class MyWindow(QMainWindow):
     def create_button_calc(self):
         self.btn_calc = QPushButton('Посчитать', self)
         self.btn_calc.move(0,245)
-        self.btn_calc.clicked.connect(self.calc)     
-        
+        self.btn_calc.clicked.connect(self.calc)
+
 
     def create_about(self):
         self.lbl_about = QLabel(self)
@@ -75,40 +75,52 @@ class MyWindow(QMainWindow):
         msg.exec_()
 
 
-    def read_cells(self, row): 
+    def read_cells(self, row):
         cell_item = self.tbl_input.item(row, 3)
-        return float(cell_item.text())
-    
+        result = float(cell_item.text())
+        return result
 
-    def calc(self):    
+
+
+    def calc(self):
+        times=[]
+        ICs=[]
+        UCs=[]
+
         try:
             row_increment = functools.partial(next, itertools.count())
 
             times, ICs, UCs = runge_kutta_electricity.rke(
-                R=read_cells(row_increment()),
-                L=read_cells(row_increment()),
-                C=read_cells(row_increment()),
-                IC0=read_cells(row_increment()),
-                E=read_cells(row_increment()),
-                UC0=read_cells(row_increment()),
-                h=read_cells(row_increment()),
+                R=self.read_cells(row_increment()),
+                L=self.read_cells(row_increment()),
+                C=self.read_cells(row_increment()),
+                IC0=self.read_cells(row_increment()),
+                E=self.read_cells(row_increment()),
+                UC0=self.read_cells(row_increment()),
+                h=self.read_cells(row_increment()),
             )
-    
-            plt.plot(times,ICs)
-            plt.scatter(times, ICs) 
-
-            plt.plot(times,UCs)
-            plt.scatter(times, UCs) 
-
-            plt.show()
 
         except:
             self.show_error_message()
             return
 
 
+        plt.plot(times,ICs)
+        plt.scatter(times, ICs)
+        plt.ylabel("Ток - ампер")
+        plt.xlabel("Время - секунд")
+        plt.show()
+
+        plt.plot(times,UCs)
+        plt.scatter(times, UCs)
+        plt.ylabel("Напряжение - вольт")
+        plt.xlabel("Время - секунд")
+        plt.show()
+
+
+
 
 app = QApplication(sys.argv)
-main_window = MyWindow()  
+main_window = MyWindow()
 main_window.show()
 app.exec_()

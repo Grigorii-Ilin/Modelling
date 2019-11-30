@@ -60,3 +60,5 @@ def rke(R=0.5,
             UCs.append(UC+get_delta(ku))
 
         print(times[i], ICs[i], UCs[i])
+
+    return times, ICs, UCs
