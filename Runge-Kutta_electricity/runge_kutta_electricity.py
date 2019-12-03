@@ -19,19 +19,19 @@ def rke(R=0.5,
     def get_k_I(IC, UC, add_IC, add_UC):
         UC+=add_UC
         IC+=add_IC
-        k=h*(E-R*IC-UC)/L/1000
+        k=h*(-R*IC+UC)/L
         return k
 
     def get_k_U(IC, add_IC):
         IC+=add_IC
-        k=h*IC/C
+        k=h*(-IC/C)
         return k
 
     def get_delta(ks):
         return (ks[0]+2*ks[1]+2*ks[2]+ks[3])/6
 
 
-    for i in range(100):
+    for i in range(2300):
         times.append(i*h)
 
         if i==0:

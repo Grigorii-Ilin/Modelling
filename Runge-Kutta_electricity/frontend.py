@@ -51,8 +51,8 @@ class MyWindow(QMainWindow):
         input_row(row_increment(), "Ёмкость", "C", "Фарад", 150e-6)
         input_row(row_increment(), "Нач. ток", "I_0", "Ампер", 0)
         input_row(row_increment(), "ЭДС", "E", "Вольт", 1500)
-        input_row(row_increment(), "Нач. напряжение", "U_0", "Вольт", 0)
-        input_row(row_increment(), "Шаг", "h", "Секунд", 300e-6)
+        input_row(row_increment(), "Нач. напряжение", "U_0", "Вольт", 1500)
+        input_row(row_increment(), "Шаг", "h", "Секунд", 1e-6)
 
 
     def create_button_calc(self):
