@@ -9,7 +9,8 @@ from PyQt5.QtWidgets import QApplication, QMainWindow,  QPushButton,  QLabel, QE
 from PyQt5.QtCore import  QSize, QRegExp
 from PyQt5.QtGui import QRegExpValidator
 
-import runge_kutta_electricity
+from data_getter import Data
+import temperature_calc
 
 
 class MyWindow(QMainWindow):
@@ -31,7 +32,7 @@ class MyWindow(QMainWindow):
             self.tbl_input.setItem(row_index, 3, QTableWidgetItem(str(value)))
 
 
-        ROWS_COUNT = 7
+        ROWS_COUNT = 9
 
         self.tbl_input = QTableWidget(self)
 
@@ -46,13 +47,15 @@ class MyWindow(QMainWindow):
 
         row_increment = functools.partial(next, itertools.count())
 
-        input_row(row_increment(), "Сопротивление", "R", "Ом", 0.5)
-        input_row(row_increment(), "Индуктивность", "L", "Генри", 60e-6)
-        input_row(row_increment(), "Ёмкость", "C", "Фарад", 150e-6)
-        input_row(row_increment(), "Нач. ток", "I_0", "Ампер", 0)
-        input_row(row_increment(), "ЭДС", "E", "Вольт", 1500)
-        input_row(row_increment(), "Нач. напряжение", "U_0", "Вольт", 1500)
-        input_row(row_increment(), "Шаг", "h", "Секунд", 1e-6)
+        input_row(row_increment(), "Длина сержня", "L", "см", 10)
+        input_row(row_increment(), "Радиус стержня", "R", "см", 0.5)
+        input_row(row_increment(), "Окр. темп-ра", "Te", "Кельвин", 300)
+        input_row(row_increment(), "Внешний поток", "F", "В/(см2*К)", 100)
+        input_row(row_increment(), "Coefficient of thermal conductivity at the beginning", "k0", "В/(см*К)", 0.2)
+        input_row(row_increment(), "Coefficient of thermal conductivity at the end", "kN", "В/(см*К)", 0.5)
+        input_row(row_increment(), "Heat transfer coefficient at the beginning", "α0", "В/(см2*К)", 1e-2)
+        input_row(row_increment(), "Heat transfer coefficient at the end", "αN", "В/(см2*К)", 9e-3)
+        input_row(row_increment(), "Шаг", "h", "см", 1e-2)
 
 
     def create_button_calc(self):
@@ -64,7 +67,7 @@ class MyWindow(QMainWindow):
     def create_about(self):
         self.lbl_about = QLabel(self)
         self.lbl_about.move(0, 360)
-        self.lbl_about.setText('Лабораторная работа № 4. Автор: Г.Б. Ильин, ИУ7-78Б(В)')
+        self.lbl_about.setText('Лабораторная работа № 5. Автор: Г.Б. Ильин, ИУ7-78Б(В)')
         self.lbl_about.adjustSize()
 
 
@@ -83,39 +86,31 @@ class MyWindow(QMainWindow):
 
 
     def calc(self):
-        times=[]
-        ICs=[]
-        UCs=[]
-
         try:
             row_increment = functools.partial(next, itertools.count())
 
-            times, ICs, UCs = runge_kutta_electricity.rke(
+            data= Data(
+                l=self.read_cells(row_increment()),
                 R=self.read_cells(row_increment()),
-                L=self.read_cells(row_increment()),
-                C=self.read_cells(row_increment()),
-                IC0=self.read_cells(row_increment()),
-                E=self.read_cells(row_increment()),
-                UC0=self.read_cells(row_increment()),
-                h=self.read_cells(row_increment()),
-            )
+                Tenv=self.read_cells(row_increment()),
+                F0=self.read_cells(row_increment()),
+                k0=self.read_cells(row_increment()),
+                kN=self.read_cells(row_increment()),
+                alpha0=self.read_cells(row_increment()),
+                alphaN=self.read_cells(row_increment()),
+                h=self.read_cells(row_increment())
+                )
 
         except:
             self.show_error_message()
             return
 
-
-        plt.plot(times,ICs)
-        plt.scatter(times, ICs)
-        plt.ylabel("Ток - ампер")
-        plt.xlabel("Время - секунд")
-        plt.show()
-
-        plt.plot(times,UCs)
-        plt.scatter(times, UCs)
-        plt.ylabel("Напряжение - вольт")
-        plt.xlabel("Время - секунд")
-        plt.show()
+        temperature_calc.main_proc(data)
+        # plt.plot(times,UCs)
+        # plt.scatter(times, UCs)
+        # plt.ylabel("Напряжение - вольт")
+        # plt.xlabel("Время - секунд")
+        # plt.show()
 
 
 
