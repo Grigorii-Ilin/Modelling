@@ -3,11 +3,9 @@ import functools
 import itertools
 
 import numpy as np
-import matplotlib.pyplot as plt
 
 from PyQt5.QtWidgets import QApplication, QMainWindow,  QPushButton,  QLabel, QErrorMessage, QMessageBox, QTableWidget, QTableWidgetItem, QLineEdit
-from PyQt5.QtCore import  QSize, QRegExp
-from PyQt5.QtGui import QRegExpValidator
+from PyQt5.QtCore import  QSize
 
 from data_getter import Data
 import temperature_calc
@@ -51,10 +49,10 @@ class MyWindow(QMainWindow):
         input_row(row_increment(), "Радиус стержня", "R", "см", 0.5)
         input_row(row_increment(), "Окр. темп-ра", "Te", "Кельвин", 300)
         input_row(row_increment(), "Внешний поток", "F", "В/(см2*К)", 100)
-        input_row(row_increment(), "Coefficient of thermal conductivity at the beginning", "k0", "В/(см*К)", 0.2)
-        input_row(row_increment(), "Coefficient of thermal conductivity at the end", "kN", "В/(см*К)", 0.5)
-        input_row(row_increment(), "Heat transfer coefficient at the beginning", "α0", "В/(см2*К)", 1e-2)
-        input_row(row_increment(), "Heat transfer coefficient at the end", "αN", "В/(см2*К)", 9e-3)
+        input_row(row_increment(), "Коэф. теплопров. нач", "k0", "В/(см*К)", 0.1)
+        input_row(row_increment(), "Коэф. теплопров. кон", "kN", "В/(см*К)", 0.05)
+        input_row(row_increment(), "Коэф. теплоотд. нач.", "α0", "В/(см2*К)", 10e-2)
+        input_row(row_increment(), "Коэф. теплоотд. кон.", "αN", "В/(см2*К)", 0.5e-2)
         input_row(row_increment(), "Шаг", "h", "см", 1e-2)
 
 
@@ -92,7 +90,7 @@ class MyWindow(QMainWindow):
             data= Data(
                 l=self.read_cells(row_increment()),
                 R=self.read_cells(row_increment()),
-                Tenv=self.read_cells(row_increment()),
+                Te=self.read_cells(row_increment()),
                 F0=self.read_cells(row_increment()),
                 k0=self.read_cells(row_increment()),
                 kN=self.read_cells(row_increment()),
@@ -106,13 +104,6 @@ class MyWindow(QMainWindow):
             return
 
         temperature_calc.main_proc(data)
-        # plt.plot(times,UCs)
-        # plt.scatter(times, UCs)
-        # plt.ylabel("Напряжение - вольт")
-        # plt.xlabel("Время - секунд")
-        # plt.show()
-
-
 
 
 app = QApplication(sys.argv)

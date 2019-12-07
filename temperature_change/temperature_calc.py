@@ -1,13 +1,11 @@
 from data_getter import Data
-from method import thomas_algorithm
-from numpy import arange
+import numpy as np
 import matplotlib.pyplot as plt
-
-#d=Data()
 
 
 def left_boundary_conditions(d):
-    X_half = d.Xn_plus_half(d.x0)
+    X_half = d.Kappa_plus_half(d.x0)
+
     p1 = d.p(d.x0 + d.h)
     f1 = d.f(d.x0 + d.h)
 
@@ -23,67 +21,79 @@ def left_boundary_conditions(d):
     return K0, M0, P0
 
 
-def right__boundary_conditions(d):
-    X_half = d.Xn_minus_half(d.l)
+def right_boundary_conditions(d):
+    X_half = d.Kappa_minus_half(d.l)
 
     pN = d.p(d.l)
     pN1 = d.p(d.l - d.h)
+
     fN = d.f(d.l)
-    fN1 = (2 * d.alpha(d.l - d.h)) / d.R * d.Tenv
+    fN1 = (2 * d.alpha(d.l - d.h)) / d.R * d.Te
 
     KN = - (X_half + d.alphaN * d.h) / d.h - d.h * (5 * pN + pN1) / 16
     MN = X_half / d.h - d.h * (pN + pN1) / 16
-    PN = - d.alphaN * d.Tenv - d.h * (3 * fN + fN1) / 8
+    PN = - d.alphaN * d.Te - d.h * (3 * fN + fN1) / 8
 
     return KN, MN, PN
 
 
-def calc_coefficients(d):
-    A = []
+def calc_coefficients(data):
+    A = []#e.g. C
     B = []
-    C = []
-    D = []
+    C = []#e.g. A
+    D = []#e.g. F
 
-    for i in arange(d.x0, d.l, d.h):
-        An = d.Xn_minus_half(i) / d.h
-        Cn = d.Xn_plus_half(i) / d.h
-        Bn = An + Cn + d.p(i) * d.h
-        Dn = d.f(i) * d.h
+    for i in np.arange(data.x0, data.l, data.h):
+        An = data.Kappa_minus_half(i) / data.h
+        Cn = data.Kappa_plus_half(i) / data.h
+        Bn = An + Cn + data.p(i) * data.h
+        Dn = data.f(i) * data.h
 
-        A.append(An)
+        A.append(An) 
         B.append(Bn)
-        C.append(Cn)
-        D.append(Dn)
+        C.append(Cn) 
+        D.append(Dn) 
 
     return A, B, C, D
 
 
+def calc_T(A, B, C, D, K0, M0, P0, KN, MN, PN):  
+
+    xi = [None, - M0 / K0]
+    eta = [None, P0 / K0]
+
+    # Прямой проход
+    for i in range(1, len(A)):
+        x = C[i] / (B[i] - A[i] * xi[i])
+        e = (D[i] + A[i] * eta[i]) / (B[i] - A[i] * xi[i])
+
+        xi.append(x)
+        eta.append(e)
+
+    # Обратный проход
+    ys = [(PN - MN * eta[-1]) / (KN + MN * xi[-1])]
+
+    for i in range(len(A) - 2, -1, -1):
+        y_i = xi[i + 1] *  ys[0] + eta[i + 1]
+
+        ys.insert(0, y_i)
+
+    return ys
+
+
 def main_proc(data):
     a, b, c, d = calc_coefficients(data)
-    # print(a)
-    # print(b)
-    # print(c)
-    # print(d)
-
     k0, m0, p0 = left_boundary_conditions(data)
-    # print(k0)
-    # print(m0)
-    # print(p0)
+    kN, mN, pN = right_boundary_conditions(data)
+    
+    T = calc_T(a, b, c, d, k0, m0, p0, kN, mN, pN)
+    x = np.arange(data.x0, data.l, data.h)
 
-    kN, mN, pN = right__boundary_conditions(data)
-    # print(kN)
-    # print(mN)
-    # print(pN)
-
-    T = thomas_algorithm(a, b, c, d, k0, m0, p0, kN, mN, pN)
-    print(T)
-    x = arange(data.x0, data.l, data.h)
-
-    plt.title('Heating the rod')
+    plt.title('Нагревание стержня')
     plt.grid(True)
-    plt.plot(x, T, 'r', linewidth=0.5)
-    plt.xlabel("Length (cm)")
-    plt.ylabel("Temperature (K)")
+    plt.plot(x, T, 'r', linewidth=0.8)
+    plt.xlabel("Длина (см)")
+    plt.ylabel("Температура (K)")
 
     plt.savefig("plot.png")
 
