@@ -16,7 +16,7 @@ class Data:
 
         self.bk = (self.kN * self.l) / (self.kN - self.k0)
         self.ak = - self.k0 * self.bk
-        
+
         self.b_alpha = (self.alphaN * self.l) / (self.alphaN - self.alpha0)
         self.a_alpha = - self.alpha0 * self.b_alpha
 
@@ -27,7 +27,7 @@ class Data:
     def alpha(self, x):
         return self.a_alpha / (x - self.b_alpha)
 
-    def Kappa_plus_half(self, x):
+    def Kappa_plus_half(self, x): # каппа метод средних
         return (self.k(x)+self.k(x+self.h))/2
 
     def Kappa_minus_half(self, x):
